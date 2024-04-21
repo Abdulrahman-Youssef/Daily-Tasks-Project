@@ -91,8 +91,6 @@ class _NewTaskDialogState extends State<NewTaskDialog> {
   }
 
   void _close(BuildContext context) {
-    Navigator.pop(
-      context,
-    );
+    Navigator.pop(context);
   }
 }
