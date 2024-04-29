@@ -27,7 +27,7 @@ class _MyAppState extends State<MyApp> {
       ),
         home: BlocProvider<HomeCubit>(
           create: (context) => HomeCubit()..init(),
-          child:  MyHomePage(),
+            child:  MyHomePage(),
         )
     );
   }

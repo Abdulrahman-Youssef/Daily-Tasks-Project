@@ -17,15 +17,17 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Home_Page_Drawer(),
+      drawer: BlocBuilder<HomeCubit , HomeState>(
+        builder: (context , state) {
+          return Home_Page_Drawer();
+        }
+      ),
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
         title: Text('Tasks'),
-
       ),
       body: BlocBuilder<HomeCubit, HomeState>(
         buildWhen: (previousState, state) {
-
           print(previousState);
           return true;
           // return true/false to determine whether or not
@@ -34,47 +36,55 @@ class _MyHomePageState extends State<MyHomePage> {
         builder: (BuildContext context, state) => SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: state.tasks == null
-              ? RefreshProgressIndicator()
+              ? const RefreshProgressIndicator()
               : Column(
                   mainAxisAlignment: MainAxisAlignment.start,
-                  children: state.tasks!
+                  children: state.PandOP!
                       .map((Task t) => CustomAccordion(
-                            title: t.title,
+                    // why all the letters are capital
+                            title: t.title ,
                             subTitle: t.priority.toString() ?? '---',
                             backgroundColor: t.status == Status.failed
                                 ? Colors.red
-                                : Colors.green,
+                                : t.status == Status.planned ||
+                                        t.status == Status.onProgress
+                                    ? Colors.blue[200]
+                                    : Colors.green,
                             widgetItems: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text('${t.description}'),
                                 Text('${t.status}'),
-
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
                                   children: [
                                     TextButton(
-                                      style:  TextButton.styleFrom(
+                                      style: TextButton.styleFrom(
                                           foregroundColor: Colors.blue),
-                                      onPressed: () => context.read<HomeCubit>().setCompleted(t),
+                                      onPressed: () => context
+                                          .read<HomeCubit>()
+                                          .setCompleted(t),
                                       child: const Text('complete'),
                                     ),
                                     TextButton(
-                                      style:  TextButton.styleFrom(
+                                      style: TextButton.styleFrom(
                                           foregroundColor: Colors.grey),
-                                      onPressed: () => context.read<HomeCubit>().setFailed(t),
+                                      onPressed: () => context
+                                          .read<HomeCubit>()
+                                          .setFailed(t),
                                       child: const Text('Failed'),
                                     ),
                                     TextButton(
-                                      style:  TextButton.styleFrom(
+                                      style: TextButton.styleFrom(
                                           foregroundColor: Colors.pink),
-                                      onPressed: () => context.read<HomeCubit>().RemoveTask(t),
+                                      onPressed: () => context
+                                          .read<HomeCubit>()
+                                          .RemoveTask(t),
                                       child: const Text('Remove'),
                                     ),
-
                                   ],
                                 ),
-
                               ],
                             ),
                           ))

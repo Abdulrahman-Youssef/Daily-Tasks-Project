@@ -7,9 +7,18 @@ import 'new_task_dialog.dart';
 
 class HomeState {
   List<Task>? tasks;
+  // planned and onProgress
+  List<Task>? PandOP;
+  List<Task>? failedTasks;
+  List<Task>? completedTasks;
   int lastId = 0;
-// A
-  HomeState({this.tasks, this.lastId = 0});
+// A constructor to put the initial values
+  HomeState(
+      {this.tasks,
+      this.lastId = 0,
+      this.PandOP,
+      this.failedTasks,
+      this.completedTasks});
 }
 
 // class LoadingHomeState extends HomeState{}
@@ -29,7 +38,8 @@ class HomeCubit extends Cubit<HomeState> {
 
     // ANY change in the home state must be in the emit
 
-    emit(HomeState(tasks: state.tasks!..add(task)));
+    emit(HomeState(
+        tasks: state.tasks!..add(task), PandOP: state.PandOP?..add(task)));
     cache.saveList('tasks', state.tasks!);
     state.lastId + 1;
   }
@@ -38,17 +48,20 @@ class HomeCubit extends Cubit<HomeState> {
     // state.tasks = cache.getList('tasks', () => Task.empty()) ?? [];
 
     emit(HomeState(tasks: cache.getList('tasks', () => Task.empty()) ?? []));
-    // تحت الانشاء
-    // List<Task> failedTasks = state.tasks!
-    //     .where((t) =>
-    // (t.status == Status.planned || t.status == Status.onProgress) &&
-    //     t.dueTime.isBefore(DateTime.now()))
-    //     .toList();
-    // failedTasks.forEach((t) => t.status = Status.failed);
 
+    state.completedTasks =
+        state.tasks!.where((e) => (e.status == Status.completed)).toList();
+    // fill the
+    state.failedTasks =
+        state.tasks!.where((t) => (t.status == Status.failed)).toList();
+    // full the to be print on main screen
+    state.PandOP = state.tasks!
+        .where((e) =>
+            (e.status == Status.onProgress || e.status == Status.planned))
+        .toList();
+
+    // لي بنسيف هناهو اي التغير اللي عملناه علشان نعمل سيٌف
     await cache.saveList<Task>('tasks', state.tasks!);
-
-    emit(state);
   }
 
   void setCompleted(Task t) async {
@@ -59,7 +72,10 @@ class HomeCubit extends Cubit<HomeState> {
             if (e == t) {
               e.status = Status.completed;
             }
-          })));
+          }),
+        PandOP: state.PandOP?..remove(t),
+        completedTasks: state.completedTasks?..add(t)));
+
     //M
     // t.status = Status.completed;
     await cache.saveList<Task>('tasks', state.tasks!);
@@ -75,20 +91,22 @@ class HomeCubit extends Cubit<HomeState> {
             if (e == t) {
               e.status = Status.failed;
             }
-          })));
+          }),
+        PandOP: state.PandOP?..remove(t),
+        failedTasks: state.failedTasks?..add(t)));
 
     await cache.saveList<Task>('tasks', state.tasks!);
-    //M
-    // emit(state);
   }
 
   // تحت الانشاء
   void RemoveTask(Task t) async {
     // A
-    emit(HomeState(tasks: state.tasks?..remove(t)));
+    emit(HomeState(
+        tasks: state.tasks?..remove(t),
+        PandOP: state.PandOP?..remove(t),
+        completedTasks: state.completedTasks?..remove(t),
+        failedTasks: state.failedTasks?..remove(t)));
 
     await cache.saveList<Task>('tasks', state.tasks!);
-    //M
-    // emit(state);
   }
 }
