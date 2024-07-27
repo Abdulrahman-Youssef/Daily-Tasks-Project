@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:untitled1/views/home_cubit.dart';
+import 'package:untitled1/views/task_card.dart';
 import 'home_view.dart';
 import 'package:untitled1/models/task.dart';
 import 'package:custom_accordion/custom_accordion.dart';
@@ -35,7 +36,7 @@ class TasksHistory extends StatelessWidget {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            Text('total tasks : ${state.tasks!.length} '),
+                            Text('total tasks : ${state.completedTasks!.length + state.failedTasks!.length} '),
                             Text('completed tasks : ${state.completedTasks!.length} '),
                             Text('failed tasks : ${state.failedTasks!.length} ')
                           ],
@@ -46,36 +47,14 @@ class TasksHistory extends StatelessWidget {
                             ? const RefreshProgressIndicator()
                             : Column(
                           children: state.completedTasks!
-                              .map((e) => (CustomAccordion(
-                            subTitle: e.status.toString(),
-                            title: e.title,
-                            widgetItems: Column(
-                              children: [
-                                Text('${e.description}'),
-                                TextButton(
-                                    onPressed: () => context.read<HomeCubit>().RemoveTask(e),
-                                    child: const Text('remove'))
-                              ],
-                            ),
-                          )))
+                              .map((e) =>TaskCard(context , e ))
                               .toList(),
                         ),
                       ),
                       SingleChildScrollView(
                         child: Column(
                           children: state.failedTasks!
-                              .map((e) => (CustomAccordion(
-                            subTitle: e.status.toString(),
-                            title: e.title,
-                            widgetItems: Column(
-                              children: [
-                                Text('${e.description}'),
-                                TextButton(
-                                    onPressed: () => context.read<HomeCubit>().RemoveTask(e),
-                                    child: const Text('remove'))
-                              ],
-                            ),
-                          )))
+                              .map((e) => (TaskCard(context , e )))
                               .toList(),
                         ),
                       ),

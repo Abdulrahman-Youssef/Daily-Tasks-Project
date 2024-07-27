@@ -32,7 +32,7 @@ class Home_Page_Drawer extends StatelessWidget {
             InkWell(
               onTap: () {
                 // change push with replace
-                Navigator.of(context).push(MaterialPageRoute(
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
                     builder: (context) => BlocProvider<HomeCubit>(
                         create: (context) => HomeCubit()..init(),
                         child: MyHomePage())));
