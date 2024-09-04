@@ -1,4 +1,5 @@
-# untitled1
+you can start the projct on the phone just from the app-release.apk File
+
 
 A new Flutter project.
 
